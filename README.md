@@ -15,9 +15,9 @@ Este repositorio contiene una aplicación web con un **backend en PHP con MySQL*
 
 - Nombre de la base de datos: `prueba_tecnica`
 - MySQL con las siguientes tablas:
-  - `usuarios`: Maneja autenticación
+  - `users`: Maneja autenticación
   - `datos`: Almacena los registros del sistema
-- Consultas SQL directas en PHP (no se usan procedimientos almacenados)
+- Procedimientos Almacenados en PHP (no se usan consultas directas)
 
 ### **Frontend** (React + Bootstrap)
 
@@ -76,61 +76,139 @@ Ejecuta el siguiente script SQL en MySQL para crear las tablas y procedimientos:
 CREATE DATABASE IF NOT EXISTS prueba_tecnica;
 USE prueba_tecnica;
 
-CREATE TABLE usuarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    correo VARCHAR(100) UNIQUE NOT NULL,
-    clave VARCHAR(255) NOT NULL,
-    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+/*
+Navicat MySQL Data Transfer
 
-CREATE TABLE datos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    correo VARCHAR(100) UNIQUE NOT NULL,
-    telefono VARCHAR(20) NOT NULL,
-    estado TINYINT(1) DEFAULT 1,  -- 1: Activo, 0: Eliminado (eliminación lógica)
-    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+Source Server         : MySql
+Source Server Version : 100425
+Source Host           : localhost:3306
+Source Database       : prueba_tecnica
 
--- Procedimientos almacenados
+Target Server Type    : MYSQL
+Target Server Version : 100425
+File Encoding         : 65001
 
-DELIMITER //
+Date: 2025-02-20 19:27:53
+*/
 
-CREATE PROCEDURE InsertarDato(
+SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for datos
+-- ----------------------------
+DROP TABLE IF EXISTS `datos`;
+CREATE TABLE `datos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `correo` varchar(100) NOT NULL,
+  `telefono` varchar(20) NOT NULL,
+  `estado` tinyint(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `correo` (`correo`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+
+
+-- ----------------------------
+-- Table structure for users
+-- ----------------------------
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+
+
+-- ----------------------------
+-- Procedure structure for ActualizarDato
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `ActualizarDato`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ActualizarDato`(IN p_id INT,
     IN p_nombre VARCHAR(100),
     IN p_correo VARCHAR(100),
-    IN p_telefono VARCHAR(20),
-    IN p_estado TINYINT
+    IN p_telefono VARCHAR(20))
+BEGIN
+    UPDATE datos 
+    SET nombre = p_nombre, correo = p_correo, telefono = p_telefono
+    WHERE id = p_id AND estado = 1;
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for AutenticarUsuario
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `AutenticarUsuario`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AutenticarUsuario`(
+    IN p_username VARCHAR(50)
 )
 BEGIN
-    INSERT INTO datos (nombre, correo, telefono, estado)
-    VALUES (p_nombre, p_correo, p_telefono, p_estado);
-END //
+    SELECT * FROM users WHERE username = p_username;
+END
+;;
+DELIMITER ;
 
-CREATE PROCEDURE ObtenerDatos()
-BEGIN
-    SELECT id, nombre, correo, telefono FROM datos WHERE estado = 1;
-END //
-
-CREATE PROCEDURE ActualizarDato(
-    IN p_id INT,
-    IN p_nombre VARCHAR(100),
-    IN p_correo VARCHAR(100),
-    IN p_telefono VARCHAR(20)
-)
-BEGIN
-    UPDATE datos SET nombre = p_nombre, correo = p_correo, telefono = p_telefono WHERE id = p_id;
-END //
-
-CREATE PROCEDURE EliminarDato(
-    IN p_id INT
-)
+-- ----------------------------
+-- Procedure structure for EliminarDato
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `EliminarDato`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `EliminarDato`(IN p_id INT)
 BEGIN
     UPDATE datos SET estado = 0 WHERE id = p_id;
-END //
-
+END
+;;
 DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for InsertarDato
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `InsertarDato`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertarDato`(IN p_nombre VARCHAR(100),
+    IN p_correo VARCHAR(100),
+    IN p_telefono VARCHAR(20))
+BEGIN
+    INSERT INTO datos (nombre, correo, telefono, estado)
+    VALUES (p_nombre, p_correo, p_telefono, 1);
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for ObtenerDatos
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `ObtenerDatos`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ObtenerDatos`()
+BEGIN
+    SELECT id, nombre, correo, telefono 
+    FROM datos 
+    WHERE estado = 1;
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for RegistrarUsuario
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `RegistrarUsuario`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `RegistrarUsuario`(
+    IN p_username VARCHAR(50),
+    IN p_password VARCHAR(255)
+)
+BEGIN
+    INSERT INTO users (username, password) VALUES (p_username, p_password);
+END
+;;
+DELIMITER ;
+SET FOREIGN_KEY_CHECKS=1;
+
 ```
 
 Modifica `config/Database.php` con tus credenciales de MySQL:
