@@ -34,19 +34,19 @@ UTH-Florida/
 ├── backend/  (Carpeta para desarrollo local)
 │   ├── app/
 │   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── db/
 │   │   ├── models/
 │   ├── config/
 │   ├── public/
 │   ├── routes.php
-│   ├── index.php
 │
 ├── frontend/  (Carpeta del cliente en React)
 │   ├── src/
-│   │   ├── components/
 │   │   ├── pages/
 │   ├── public/
 │   ├── package.json
-│   ├── .env
+│   ├── README.md
 │
 ├── README.md
 ```
