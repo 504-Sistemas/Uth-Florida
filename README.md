@@ -249,7 +249,7 @@ npm install
 
 ### 2️⃣ **Configurar la API en el Frontend**
 
-Edita `src/Dashboard.js` , `src/Register.js` , `src/Login.js` para apuntar al backend:
+Edita `src/pages/Dashboard.js` , `src/pages/Register.js` , `src/pages/Login.js` para apuntar al backend:
 
 ```js
 const API_URL = "http://localhost:9050/backend/routes.php"; // Cambiar según el puerto configurado en Apache
