@@ -269,6 +269,22 @@ npm start
 
 ---
 
+### 🚀 Configuración de CORS en el Backend
+Si encuentras problemas relacionados con CORS (Cross-Origin Resource Sharing) al hacer solicitudes desde el frontend, puedes configurar los encabezados en tu servidor Apache para permitir que el frontend en React se comunique con el backend en PHP, especialmente si están en diferentes puertos.
+
+Agregar los encabezados CORS en el archivo .htaccess o httpd.conf de Apache:
+apache
+Copiar
+```js
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+    Header set Access-Control-Allow-Credentials "true"
+</IfModule>
+```
+Este bloque asegura que tu servidor backend permita solicitudes desde cualquier origen. Si deseas restringir los orígenes, reemplaza * por el dominio específico, como por ejemplo http://localhost:3000.
+
 ## 🎯 **Créditos**
 
 Desarrollado por **504-Sistemas** 🚀.
